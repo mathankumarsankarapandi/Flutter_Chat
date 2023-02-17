@@ -4,6 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class CommonWidgets{
 
+  static Color appThemeColor = Colors.green;
+  static Color boxGrey = const Color(0xFFF1F0F0);
 
   Widget getWillPopScopeWidget(
       BuildContext context,
@@ -124,6 +126,127 @@ class CommonWidgets{
       controller: controller,
     );
   }
+
+  Widget emailTextFieldWithBackground(
+      BuildContext context,
+      TextEditingController controller,
+      String labelText,
+      ValueChanged<String>? onValueChanged,
+      ValueChanged<String>? onFieldSubmitted,
+      double fontSize) {
+    return TextFormField(
+      enabled: true,
+      textAlign: TextAlign.start,
+      textInputAction: TextInputAction.done,
+      decoration: InputDecoration(
+        border: InputBorder.none,
+        labelText: labelText,
+        contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+        labelStyle:const TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color:  Colors.green,
+        ),
+        isDense: false,
+      ),
+      maxLines: 1,
+      style: const TextStyle(
+        fontSize: 20,
+        color: Colors.black,
+        fontWeight: FontWeight.normal,
+      ),
+      cursorColor: Colors.green,
+      keyboardType: TextInputType.emailAddress,
+      autocorrect: false,
+      controller: controller,
+    );
+  }
+
+  Widget commonTextInputFieldWithBackground(BuildContext context,
+      double fontSize,
+      String fieldText,
+      int maxLines,
+      TextInputAction textInputAction,
+      TextInputType textInputType,
+      TextEditingController controller,
+      ValueChanged<String> onFieldSubmitted,
+      ValueChanged<String> onChanged,
+      VoidCallback onTap) {
+    return TextFormField(
+      enabled: true,
+      textAlign: TextAlign.start,
+      textInputAction: textInputAction,
+      decoration: InputDecoration(
+        border: InputBorder.none,
+        contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+        labelText: fieldText,
+        labelStyle:const TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color:  Colors.green,
+        ),
+        isDense: false,
+      ),
+      maxLines: 1,
+      style: const TextStyle(
+        fontSize: 20,
+        color: Colors.black,
+        fontWeight: FontWeight.normal,
+      ),
+      cursorColor: Colors.green,
+      keyboardType: textInputType,
+      autocorrect: false,
+      controller: controller,
+    );
+  }
+
+  Widget passwordTextFieldWithBackground(
+      BuildContext context,
+      TextEditingController controller,
+      String labelText,
+      ValueChanged<String>? onValueChanged,
+      ValueChanged<String>? onFieldSubmitted,
+      double fontSize,
+      VoidCallback onPressed,
+      {bool isObscure = true}) {
+    return TextFormField(
+      enabled: true,
+      textAlign: TextAlign.start,
+      textInputAction: TextInputAction.done,
+      obscureText: isObscure,
+      decoration: InputDecoration(
+        border: InputBorder.none,
+        contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+        suffixIcon: IconButton(
+            splashRadius: 20,
+            icon: Icon(
+              isObscure
+                  ? Icons.visibility_off_outlined
+                  : Icons.visibility_outlined,
+              color: Colors.green,
+            ),
+            onPressed: onPressed),
+        labelText: labelText,
+        labelStyle:const TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color:  Colors.green,
+        ),
+        isDense: false,
+      ),
+      maxLines: 1,
+      style: const TextStyle(
+        fontSize: 20,
+        color: Colors.black,
+        fontWeight: FontWeight.normal,
+      ),
+      cursorColor: Colors.green,
+      keyboardType: TextInputType.visiblePassword,
+      autocorrect: false,
+      controller: controller,
+    );
+  }
+
 
   Widget commonTextInputField(BuildContext context,
       double fontSize,
@@ -270,10 +393,45 @@ class CommonWidgets{
           padding: padding,
           decoration: BoxDecoration(
             color: buttonBgColor,
-            border: Border.all(color: buttonBgColor),
+            border: Border.all(color: buttonBorderColor),
             borderRadius: BorderRadius.circular(30)
           ),
             child: getNormalText(buttonText, buttonTextColor, 1, fontSize)));
+  }
+
+  Widget commonSubmitButton(
+      BuildContext context,
+      String buttonText,
+      double fontSize,
+      Color buttonBgColor,
+      Color buttonBorderColor,
+      Color buttonTextColor,
+      VoidCallback onPressed
+      ) {
+    return TextButton(
+        onPressed: onPressed,
+        child: Row(
+          children: [
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 15),
+                decoration: BoxDecoration(
+                  color: buttonBgColor,
+                  border: Border.all(color: buttonBorderColor),
+                  borderRadius: BorderRadius.circular(5)
+                ),
+                  child: getNormalTextWithCenterAlignment(buttonText, buttonTextColor, 1, fontSize, FontWeight.bold)),
+            ),
+          ],
+        ));
+  }
+
+  BoxDecoration getBoxDecorationWithColor(Color buttonBgColor, Color borderColor,double radius) {
+    return BoxDecoration(
+        color: buttonBgColor,
+        border: Border.all(color: borderColor),
+        borderRadius: BorderRadius.circular(radius)
+    );
   }
 
   Widget getNormalText(String text, Color color, int maxLines, double fontSize) {
@@ -281,6 +439,15 @@ class CommonWidgets{
           maxLines: maxLines,
           style: TextStyle(fontSize: fontSize, color: color));
   }
+
+  Widget getNormalTextWithCenterAlignment(String text, Color color, int maxLines, double fontSize, FontWeight fontWeight) {
+      return Text(text,
+          maxLines: maxLines,
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: fontSize, color: color,fontWeight: fontWeight));
+  }
+
+
   Widget getNormalTextWithBold(String text, Color color, int maxLines, double fontSize) {
       return Text(text,
           maxLines: maxLines,

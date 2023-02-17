@@ -109,3 +109,211 @@ class MyApp extends StatelessWidget {
   }
 }
 
+
+class NewSignInView extends StatefulWidget {
+  const NewSignInView({Key? key}) : super(key: key);
+
+  @override
+  State<NewSignInView> createState() => _NewSignInViewState();
+}
+
+class _NewSignInViewState extends State<NewSignInView> {
+
+  late Widget container;
+  CommonWidgets commonWidgets = CommonWidgets();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+
+  Future<bool> onWillPop() {
+    return CommonWidgets().launchPage(context,LogInView());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    container = formContainer(context);
+
+    return commonWidgets.getWillPopScopeWidget(context,onWillPop,container,false,null);
+  }
+
+  Widget formContainer(buildContext) {
+    return Container(
+      child: Column(
+        children: [
+          Expanded(
+              flex: 2,
+              child: Stack(
+                children: [
+                  Container(
+                    // width: 50,
+                    // height: 50,
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                        fit: BoxFit.fitWidth,
+                        image: AssetImage("assets/backgroundImage.png"),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    alignment: Alignment.center,
+                      color: const Color.fromARGB(100, 22, 44, 33),
+                      child: const Text("SIGN IN",
+                        style: TextStyle(fontSize: 25, color: Colors.white),),
+                    ),
+                ],
+              )),
+          Expanded(
+            flex: 6,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Container(
+                    margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                    decoration: commonWidgets.getBoxDecorationWithColor(CommonWidgets.boxGrey, CommonWidgets.boxGrey, 10),
+                    child: commonWidgets.commonTextInputFieldWithBackground(context, 12, "Name",1,TextInputAction.done, TextInputType.text, nameController, (value) { }, (value) { }, () {})),
+                 Container(
+                    margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                    decoration: commonWidgets.getBoxDecorationWithColor(CommonWidgets.boxGrey, CommonWidgets.boxGrey, 10),
+                    child: commonWidgets.emailTextFieldWithBackground(context, emailController, "User Mail", (value) { }, (value) { }, 12)),
+                Container(
+                    margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                    decoration: commonWidgets.getBoxDecorationWithColor(CommonWidgets.boxGrey,CommonWidgets.boxGrey, 10),
+                    child: commonWidgets.passwordTextFieldWithBackground(context, passwordController, "Password", (value) { }, (value) { }, 12,() {})),
+                Container(
+                    margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                    decoration: commonWidgets.getBoxDecorationWithColor(CommonWidgets.boxGrey,CommonWidgets.boxGrey, 10),
+                    child: commonWidgets.passwordTextFieldWithBackground(context, confirmPasswordController, "Repeat Password", (value) { }, (value) { }, 12,() {})),
+
+                Container(
+                    margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                    child: commonWidgets.commonSubmitButton(context, "Sign Up", 20, CommonWidgets.appThemeColor, CommonWidgets.appThemeColor, Colors.white,  () { })),
+                commonWidgets.getNormalTextWithCenterAlignment("Or", CommonWidgets.appThemeColor, 1, 15, FontWeight.normal),
+
+                Container(
+                    margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                    child: commonWidgets.commonSubmitButton(context, "Sign In", 20, Colors.white, CommonWidgets.appThemeColor, CommonWidgets.appThemeColor,  () {
+                      commonWidgets.launchPage(context, const NewLoginView());
+                    })),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+class NewLoginView extends StatefulWidget {
+  const NewLoginView({Key? key}) : super(key: key);
+
+  @override
+  State<NewLoginView> createState() => _NewLoginViewState();
+}
+
+class _NewLoginViewState extends State<NewLoginView> {
+  late Widget container;
+  CommonWidgets commonWidgets = CommonWidgets();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  Future<bool> onWillPop() {
+    return CommonWidgets().launchPage(context,LogInView());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    container = formContainer(context);
+
+    return commonWidgets.getWillPopScopeWidget(context,onWillPop,container,false,null);
+  }
+
+  Widget formContainer(buildContext) {
+    return Container(
+      child: Column(
+        children: [
+          Expanded(
+            flex: 2,
+              child: Stack(
+                children: [
+                  Container(
+                    // width: 50,
+                    // height: 50,
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                        fit: BoxFit.fitWidth,
+                        image: AssetImage("assets/backgroundImage.png"),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    alignment: Alignment.center,
+                    color: const Color.fromARGB(100, 22, 44, 33),
+                    child: const Text("LOG IN",
+                      style: TextStyle(fontSize: 40, color: Colors.white, fontWeight: FontWeight.bold)),
+                  ),
+                ],
+              )),
+          Expanded(
+            flex: 4,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Container(
+                  margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  decoration: commonWidgets.getBoxDecorationWithColor(CommonWidgets.boxGrey, CommonWidgets.boxGrey, 10),
+                    child: commonWidgets.emailTextFieldWithBackground(context, emailController, "User Mail", (value) { }, (value) { }, 12)),
+                Container(
+                    margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                    decoration: commonWidgets.getBoxDecorationWithColor(CommonWidgets.boxGrey,CommonWidgets.boxGrey, 10),
+                    child: commonWidgets.passwordTextFieldWithBackground(context, passwordController, "Password", (value) { }, (value) { }, 12,() {})),
+
+                Container(
+                    margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                    child: commonWidgets.commonSubmitButton(context, "Sign In", 20, CommonWidgets.appThemeColor, CommonWidgets.appThemeColor, Colors.white,  () { })),
+                Container(
+                  alignment: Alignment.center,
+                  height: 50,
+                    child: commonWidgets.getNormalTextWithCenterAlignment("Or", CommonWidgets.appThemeColor, 1, 15, FontWeight.normal)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 50,
+                       height: 50,
+                       decoration: const BoxDecoration(
+                       image: DecorationImage(
+                       fit: BoxFit.fitWidth,
+                       image: AssetImage("assets/googleImage.png"),
+                       ),
+                      ),
+                    ),
+                    commonWidgets.getPadding(right: 30,left: 30),
+                    Container(
+                       width: 50,
+                       height: 50,
+                       decoration: const BoxDecoration(
+                       image: DecorationImage(
+                       fit: BoxFit.fitWidth,
+                       image: AssetImage("assets/facebook.png"),
+                       ),
+                      ),
+                    ),
+                  ],
+                ),
+                Container(
+                    margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                    child: commonWidgets.commonSubmitButton(context, "Sign Up", 20, Colors.white, CommonWidgets.appThemeColor, CommonWidgets.appThemeColor,  () {
+                      commonWidgets.launchPage(context, const NewSignInView());
+                    })),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
