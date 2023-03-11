@@ -125,9 +125,7 @@ class SignInViewState extends State<SignInView> {
                       fontSize,
                           () {
                         isObscureConfirmPassword = !isObscureConfirmPassword;
-                        setState(() {
-
-                        });
+                        setState(() {});
                       },
                       isObscure: isObscureConfirmPassword),
                 ),

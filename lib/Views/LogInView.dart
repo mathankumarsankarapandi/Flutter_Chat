@@ -147,7 +147,7 @@ class LoginViewState extends State<LogInView> {
                           commonWidgets.storeBooleanInSharedPreferences(
                               'isRememberLogin', true);
                           commonWidgets.storeStringInSharedPreferences('name', name);
-                          commonWidgets.launchPage(context, ChatView(name));
+                          commonWidgets.launchPage(context, ChatView(name,""));
                         }
                       },),
                     ),

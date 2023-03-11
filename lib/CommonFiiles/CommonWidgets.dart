@@ -492,11 +492,7 @@ class CommonWidgets{
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             CommonWidgets().getNormalText(dialogTitleText, dialogTitleTextColor, 1, fontSize),
-            InkWell(
-              onTap: (){
-                Navigator.of(context).pop();
-              },
-                child: CommonWidgets().getNormalText("Close", Colors.amberAccent, 1, fontSize))
+            CommonWidgets().getIcon(Icons.cancel, Colors.red, iconSize, () { Navigator.of(context).pop(); })
           ],
         ),
         content: SingleChildScrollView(

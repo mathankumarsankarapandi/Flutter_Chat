@@ -2,14 +2,17 @@ import 'package:chat/CommonFiiles/CommonWidgets.dart';
 import 'package:chat/Services/FirebaseAuthServices.dart';
 import 'package:chat/Views/ChatOthers.dart';
 import 'package:chat/Views/LogInView.dart';
+import 'package:chat/main.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 class ChatView extends StatefulWidget {
 String title;
-  ChatView(this.title);
+String photoUrl;
+  ChatView(this.title, this.photoUrl);
 
   @override
   State<StatefulWidget> createState() {
@@ -34,6 +37,9 @@ double textContainerWidth = 0;
   String userName = '';
 
   String chatRoomId(String currentUser, String receiver) {
+    if(currentUser.toLowerCase() == receiver.toLowerCase()){
+      return "${currentUser.toLowerCase()}${receiver.toLowerCase()}";
+    }
     List<int> currentUserCodeUnits = currentUser.toLowerCase().codeUnits;
     List<int> receiverCodeUnits = receiver.toLowerCase().codeUnits;
     List<int> receiverModifiedList = [];
@@ -91,9 +97,57 @@ double textContainerWidth = 0;
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
   Future<bool> onWillPop() {
-    return CommonWidgets().launchPage(context,LogInView());
+    return showDialog_(context);
   }
 
+  showDialog_(BuildContext context) {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          backgroundColor: Colors.black26,
+          title: commonWidgets.getNormalTextWithBold("Alert", CommonWidgets.appThemeColor, 1, fontSize),
+          content: SizedBox(
+            height: 150,
+            child: Column(
+              children: [
+                commonWidgets.getNormalText("Do you want logout the user", CommonWidgets.appThemeColor, 1, fontSize),
+                Row(
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.symmetric(vertical: 15),
+                      decoration: BoxDecoration(color:  CommonWidgets.appThemeColor, borderRadius: BorderRadius.circular(10)),
+                      width: 100,
+                      child: TextButton(
+                          onPressed: () {
+                            final provider = Provider.of<FirebaseAuthServices>(context,listen: false);
+                            provider.Logout();
+                            commonWidgets.storeBooleanInSharedPreferences('isRememberLogin', false);
+                            commonWidgets.launchPage(context, NewLoginView());
+                          }, child: commonWidgets.getNormalTextWithBold("OK",Colors.white , 1, fontSize)),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.symmetric(vertical: 15),
+                      decoration: BoxDecoration(color:  CommonWidgets.appThemeColor, borderRadius: BorderRadius.circular(10)),
+                      width: 100,
+                      child: TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          }, child: commonWidgets.getNormalTextWithBold("Cancel",Colors.white , 1, fontSize)),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
   @override
   void initState() {
 
@@ -132,7 +186,6 @@ double textContainerWidth = 0;
 
     textContainerWidth = MediaQuery.of(context).size.width * 0.3;
     container = formContainer(buildContext);
-
     return commonWidgets.getWillPopScopeWidget(context,onWillPop,container,false,null);
   }
 
@@ -142,9 +195,39 @@ double textContainerWidth = 0;
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          commonWidgets.commonAppBar(fontSize,widget.title,(){
+         widget.photoUrl != null && widget.photoUrl != ""
+          ? Container(
+           height: 70,
+           color: Colors.indigo,
+           child: Expanded(
+             child: Row(
+               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+               children: [
+                 Container(
+                   margin: const EdgeInsets.fromLTRB(10, 5, 5, 5),
+                   height: 45,
+                   width: 45,
+                   child: CircleAvatar(
+                     radius: 40,
+                     backgroundImage: NetworkImage(widget.photoUrl),
+                   ),
+                 ),
+                 commonWidgets.getNormalText(widget.title, Colors.white, 1, fontSize),
+                 commonWidgets.getIcon(Icons.logout, Colors.white, 30, (){
+                   final provider = Provider.of<FirebaseAuthServices>(context,listen: false);
+                   provider.Logout();
+                   commonWidgets.storeBooleanInSharedPreferences('isRememberLogin', false);
+                   commonWidgets.launchPage(context, NewLoginView());
+                 }),
+               ],
+             ),
+           ),
+         )
+          : commonWidgets.commonAppBar(fontSize,widget.title,(){
+              final provider = Provider.of<FirebaseAuthServices>(context,listen: false);
+              provider.Logout();
             commonWidgets.storeBooleanInSharedPreferences('isRememberLogin', false);
-            commonWidgets.launchPage(context, LogInView());
+            commonWidgets.launchPage(context, NewLoginView());
           }),
           commonWidgets.getPadding(top: 10),
           formViewPersonDetails(),
@@ -202,14 +285,24 @@ double textContainerWidth = 0;
           userId = data.docs[index]['userId'];
           userStatus = data.docs[index]['status'];
         });
-        commonWidgets.launchPage(context, ChatOthers(widget.title,userStatus,data.docs[index]['name'],name,roomId));
+        commonWidgets.launchPage(context, ChatOthers(widget.title,widget.photoUrl,userStatus,data.docs[index]['name'],name,roomId));
       },
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 10,horizontal: 10),
         decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.grey,width: 0.2))),
         child: Row(
           children: [
-            Container(
+            data.docs[index]['photoUrl']  != null
+            ? Container(
+              margin: const EdgeInsets.fromLTRB(10, 5, 5, 5),
+              height: 45,
+              width: 45,
+              child: CircleAvatar(
+                radius: 40,
+                backgroundImage: NetworkImage(data.docs[index]['photoUrl']),
+              ),
+            )
+            : Container(
               alignment: Alignment.center,
               margin: const EdgeInsets.fromLTRB(10, 5, 5, 5),
               height: 45,
