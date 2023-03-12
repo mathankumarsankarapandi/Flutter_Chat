@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:chat/CommonFiles/CommonWidgets.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 
@@ -18,10 +19,9 @@ class NetWorkView {
         return hitWeb(context);
       }
       return isInternetConnected;
-    } catch (exception, stackTrace) {
-      print("exception : $exception");
-      print("stackTrace : $stackTrace");
-
+    } catch (e, s) {
+      CommonWidgets().printLog("Exception${e.toString()}");
+      CommonWidgets().printLog("Exception${s.toString()}");
       return false;
     }
   }
@@ -35,9 +35,9 @@ class NetWorkView {
           internetAddressObject[0].rawAddress.isNotEmpty) {
         return true;
       }
-    } on SocketException catch (exception, stackTrace) {
-      print("exception : $exception");
-      print("stackTrace : $stackTrace");
+    } on SocketException catch (e, s) {
+      CommonWidgets().printLog("Exception${e.toString()}");
+      CommonWidgets().printLog("Exception${s.toString()}");
       return false;
     }
     return false;

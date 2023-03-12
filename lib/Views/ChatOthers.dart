@@ -1,17 +1,17 @@
 import 'dart:io';
 
-import 'package:chat/CommonFiiles/CommonWidgets.dart';
+import 'package:chat/CommonFiles/CommonWidgets.dart';
 import 'package:chat/Services/FirebaseAuthServices.dart';
 import 'package:chat/Views/ChatView.dart';
-import 'package:chat/Views/LogInView.dart';
 import 'package:chat/main.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+
+
 class ChatOthers extends StatefulWidget {
   String title;
   String photoUrl;
@@ -19,7 +19,8 @@ class ChatOthers extends StatefulWidget {
   String userName;
   String userTitle;
   String roomId;
-  ChatOthers(this.title,this.photoUrl,this.userStatus,this.userName,this.userTitle,this.roomId);
+  String userPhotoUrl;
+  ChatOthers(this.title,this.photoUrl,this.userStatus,this.userName,this.userTitle,this.roomId,this.userPhotoUrl, {Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -43,7 +44,7 @@ class ChatViewState extends State<ChatOthers> {
   double textContainerWidth = 0;
 
   Future<bool> onWillPop() {
-    return showDialog_(context);
+    return CommonWidgets().launchPage(context, ChatView(widget.title, widget.photoUrl));
   }
 
   showDialog_(BuildContext context) {
@@ -51,46 +52,44 @@ class ChatViewState extends State<ChatOthers> {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          backgroundColor: Colors.black26,
-          title: commonWidgets.getNormalTextWithBold("Alert", CommonWidgets.appThemeColor, 1, fontSize),
-          content: SizedBox(
-            height: 150,
-            child: Column(
+        return CommonWidgets().commonDialog(
+            context,
+            fontSize,
+            24,
+            24,
+            "Logout Alert",
+            Colors.red,
+            Column(
               children: [
                 commonWidgets.getNormalText("Do you want logout the user", CommonWidgets.appThemeColor, 1, fontSize),
                 Row(
                   children: [
-                    Container(
-                      margin: const EdgeInsets.symmetric(vertical: 15),
-                      decoration: BoxDecoration(color:  CommonWidgets.appThemeColor, borderRadius: BorderRadius.circular(10)),
-                      width: 100,
-                      child: TextButton(
-                          onPressed: () {
-                            final provider = Provider.of<FirebaseAuthServices>(context,listen: false);
-                            provider.Logout();
-                            commonWidgets.storeBooleanInSharedPreferences('isRememberLogin', false);
-                            commonWidgets.launchPage(context, NewLoginView());
-                          }, child: commonWidgets.getNormalTextWithBold("OK",Colors.white , 1, fontSize)),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.symmetric(vertical: 15),
-                      decoration: BoxDecoration(color:  CommonWidgets.appThemeColor, borderRadius: BorderRadius.circular(10)),
-                      width: 100,
-                      child: TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          }, child: commonWidgets.getNormalTextWithBold("Cancel",Colors.white , 1, fontSize)),
+                    Expanded(
+                        child:  Container(
+                          margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                          decoration: BoxDecoration(color:  CommonWidgets.appThemeColor, borderRadius: BorderRadius.circular(10)),
+                          child: TextButton(
+                              onPressed: () {
+                                final provider = Provider.of<FirebaseAuthServices>(context,listen: false);
+                                provider.logout();
+                                commonWidgets.storeBooleanInSharedPreferences('isRememberLogin', false);
+                                commonWidgets.launchPage(context, const NewLoginView());
+                              }, child: commonWidgets.getNormalTextWithBold("OK",Colors.white , 1, fontSize)),
+                        )),
+                    Expanded(
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                        decoration: BoxDecoration(color:  CommonWidgets.appThemeColor, borderRadius: BorderRadius.circular(10)),
+                        child: TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            }, child: commonWidgets.getNormalTextWithBold("Cancel",Colors.white , 1, fontSize)),
+                      ),
                     ),
                   ],
                 )
               ],
-            ),
-          ),
-        );
+            ), () { });
       },
     );
   }
@@ -121,32 +120,35 @@ class ChatViewState extends State<ChatOthers> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          commonWidgets.commonAppBar(fontSize,widget.userTitle,(){
-            commonWidgets.storeBooleanInSharedPreferences('isRememberLogin', false);
-            commonWidgets.launchPage(context, NewLoginView());
+          widget.userPhotoUrl != ""
+              ? Container(
+            height: 70,
+            color: Colors.indigo,
+            child: Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.fromLTRB(10, 5, 5, 5),
+                    height: 45,
+                    width: 45,
+                    child: CircleAvatar(
+                      radius: 40,
+                      backgroundImage: NetworkImage(widget.userPhotoUrl),
+                    ),
+                  ),
+                  commonWidgets.getNormalText(widget.title, Colors.white, 1, fontSize),
+                  commonWidgets.getIcon(Icons.logout, Colors.white, 30, (){
+                    showDialog_(context);
+                  }),
+                ],
+              ),
+            ),
+          )
+              : commonWidgets.commonAppBar(fontSize,widget.title,(){
+            showDialog_(context);
           }),
           commonWidgets.getPadding(top: 10),
-          /*    Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        flex:1,
-                        child: Container(
-                            padding: const EdgeInsets.fromLTRB(20,10,10,10),
-                            decoration: BoxDecoration(color: Colors.greenAccent,
-                                border: Border.all(color: Colors.green,width: 5),
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                commonWidgets.getNormalTextWithBold(widget.title, Colors.green, 4, fontSize),
-                                commonWidgets.getNormalText(widget.userStatus, Colors.green, 1, fontSize)
-                              ],
-                            )),
-                      ),
-                    ],
-                  ),*/
           Expanded(
               child: Container(
                 margin: const EdgeInsets.all(10),
@@ -260,12 +262,10 @@ class ChatViewState extends State<ChatOthers> {
   Widget setImageView(String? pickedFilepath){
     return Column(
       children: [
-        Container(
-          child: Image(
-            image: FileImage(
-                File(pickedFilepath!)),
-            fit: BoxFit.fitHeight,
-          ),
+        Image(
+          image: FileImage(
+              File(pickedFilepath!)),
+          fit: BoxFit.fitHeight,
         ),
         Row(
           children: [
@@ -381,7 +381,17 @@ class ChatViewState extends State<ChatOthers> {
                                       child: Expanded(child: commonWidgets.getNormalText(snapshot.data!.docs[index]['message'], Colors.white, 4, fontSize),)),
                                 ),
                               ),
-                              Container(
+                              widget.photoUrl != ""
+                              ? Container(
+                                margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                                height: 30,
+                                width: 30,
+                                child: CircleAvatar(
+                                  radius: 40,
+                                  backgroundImage: NetworkImage(widget.photoUrl),
+                                ),
+                              )
+                              : Container(
                                 alignment: Alignment.center,
                                 margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
                                 height: 30,
@@ -403,7 +413,17 @@ class ChatViewState extends State<ChatOthers> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               commonWidgets.getPadding(left: 10),
-                              Container(
+                              widget.userPhotoUrl != ""
+                              ? Container(
+                                 margin: const EdgeInsets.fromLTRB(10, 5, 5, 5),
+                                height: 30,
+                                width: 30,
+                                 child: CircleAvatar(
+                                  radius: 40,
+                                  backgroundImage: NetworkImage(widget.userPhotoUrl),
+                                ),
+                               )
+                              : Container(
                                 alignment: Alignment.center,
                                 margin: const EdgeInsets.fromLTRB(10, 5, 5, 5),
                                 height: 30,

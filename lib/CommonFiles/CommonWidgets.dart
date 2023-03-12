@@ -55,7 +55,7 @@ class CommonWidgets{
               onPressed: onPressed),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(
+            borderSide: const BorderSide(
               color: Colors.pinkAccent,
             ),
           ),
@@ -104,7 +104,7 @@ class CommonWidgets{
         // border: InputBorder.none,
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
+          borderSide: const BorderSide(
             color: Colors.pinkAccent,
           ),
         ),
@@ -141,7 +141,7 @@ class CommonWidgets{
       decoration: InputDecoration(
         border: InputBorder.none,
         labelText: labelText,
-        contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+        contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
         labelStyle:const TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.bold,
@@ -178,7 +178,7 @@ class CommonWidgets{
       textInputAction: textInputAction,
       decoration: InputDecoration(
         border: InputBorder.none,
-        contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+        contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
         labelText: fieldText,
         labelStyle:const TextStyle(
           fontSize: 20,
@@ -216,7 +216,7 @@ class CommonWidgets{
       obscureText: isObscure,
       decoration: InputDecoration(
         border: InputBorder.none,
-        contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+        contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
         suffixIcon: IconButton(
             splashRadius: 20,
             icon: Icon(
@@ -263,10 +263,9 @@ class CommonWidgets{
       textAlign: TextAlign.start,
       textInputAction: textInputAction,
       decoration: InputDecoration(
-        // border: InputBorder.none,
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
+          borderSide: const BorderSide(
             color: Colors.pinkAccent,
           ),
         ),
@@ -310,15 +309,6 @@ class CommonWidgets{
           color:  Colors.black,
         ),
         isDense: false,contentPadding: const EdgeInsets.fromLTRB(20, 10, 10, 10),
-  /*      suffixIcon: Container(
-          decoration: BoxDecoration(color: Colors.white,
-              // border: Border.all(color: Colors.pinkAccent,width: 1),
-              borderRadius: BorderRadius.circular(30)),
-        child: IconButton(
-          icon: const Icon(Icons.attachment,color: Colors.pinkAccent,),
-          onPressed: iconClick,
-        ),
-      ),*/
       ),
       maxLines: 1,
       style: const TextStyle(
@@ -414,7 +404,7 @@ class CommonWidgets{
           children: [
             Expanded(
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 15),
+                padding: const EdgeInsets.symmetric(vertical: 15),
                 decoration: BoxDecoration(
                   color: buttonBgColor,
                   border: Border.all(color: buttonBorderColor),
@@ -463,7 +453,6 @@ class CommonWidgets{
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             getIcon(Icons.person_outline, Colors.white, 30, () {
-
             }),
             getNormalText(name, Colors.white, 1, fontSize),
             getIcon(Icons.logout, Colors.white, 30, onclick),
@@ -514,7 +503,7 @@ class CommonWidgets{
       String title2,
       Color color,
       double fontSize,
-      _tabController,
+      tabController,
       Widget title1Page,
       Widget title2Page) {
       return Column(
@@ -553,13 +542,13 @@ class CommonWidgets{
                     ),
                   ),
                 ],
-                controller: _tabController,
+                controller: tabController,
               ),
             ],
           ),
           Expanded(
             child: TabBarView(
-              controller: _tabController,
+              controller: tabController,
               children: [title1Page, title2Page],
             ),
           )
@@ -572,8 +561,9 @@ class CommonWidgets{
     try {
       SharedPreferences preferences = await SharedPreferences.getInstance();
       await preferences.setBool(key, value);
-    } catch (exception, stackTrace) {
-      print("exception$exception");
+    } catch (e,s) {
+      CommonWidgets().printLog("Exception${e.toString()}");
+      CommonWidgets().printLog("Exception${s.toString()}");
     }
   }
 
@@ -582,8 +572,9 @@ class CommonWidgets{
       SharedPreferences prefs = await SharedPreferences.getInstance();
 
       return prefs.getBool(key) ?? false;
-    } catch (exception, stackTrace) {
-      print("exception$exception");
+    } catch (e, s) {
+      CommonWidgets().printLog("Exception${e.toString()}");
+      CommonWidgets().printLog("Exception${s.toString()}");
       return false;
     }
   }
@@ -592,8 +583,9 @@ class CommonWidgets{
     try {
       SharedPreferences preferences = await SharedPreferences.getInstance();
       await preferences.setString(key, value);
-    } catch (exception, stackTrace) {
-      print("exception$exception");
+    } catch (e,s) {
+      CommonWidgets().printLog("Exception${e.toString()}");
+      CommonWidgets().printLog("Exception${s.toString()}");
     }
   }
 
@@ -601,199 +593,14 @@ class CommonWidgets{
     try {
       SharedPreferences preferences = await SharedPreferences.getInstance();
       return preferences.getString(key) ?? '';
-    } catch (exception, stackTrace) {
-      print("exception$exception");
+    } catch (e,s) {
+      CommonWidgets().printLog("Exception${e.toString()}");
+      CommonWidgets().printLog("Exception${s.toString()}");
       return "";
     }
   }
-/*
-  Future<Response?> performServerCommunication(
-      String formUrl,
-      Map<String, String>? queryParamMap,
-      BuildContext? context,
-      String? encodedPassword) async {
-    try {
 
-        Response? relationShipResponse;
-          relationShipResponse = (await getDioResponse(
-              formUrl,
-              queryParamMap ??  HashMap(),
-              context!,
-              encodedPassword))!;
+  void printLog(String text){
 
-        if (relationShipResponse != null) {
-          int relationShipStatusCode = checkHTTPURLConnectionResponse(
-              relationShipResponse.statusCode ?? 500);
-
-          if (relationShipStatusCode == 0) {
-            return relationShipResponse;
-          } else if (relationShipStatusCode == -2) {
-            performServerCommunication(
-                 formUrl, queryParamMap, context, encodedPassword);
-          } else if (relationShipStatusCode == -3) {
-            performServerCommunication(
-                 formUrl, queryParamMap, context, encodedPassword);
-          } else {
-            // throw Exception as  Server Not Available permanently
-          }
-        }
-    return null;
-    } catch (exception, stackTrace) {
-  print("exception$exception");
-  print("stackTrace$stackTrace");
-      return null;
-    }
   }
-
-  Future<Response?> performPOSTServerCommunication( String formUrl,
-      Map<String, String> queryParamMap, BuildContext context, Map<String, dynamic> data) async {
-    try {
-
-          Response? relationShipResponse =
-          await postDataToServerwithDio(formUrl, queryParamMap, data, context);
-
-          if (relationShipResponse != null) {
-            int? relationShipStatusCode = checkHTTPURLConnectionResponse(relationShipResponse.statusCode ?? 0);
-
-            if (relationShipStatusCode == 0 && relationShipResponse.statusMessage == "Created") {
-              return relationShipResponse;
-            } else if (relationShipStatusCode == -2) {
-              performPOSTServerCommunication( formUrl, queryParamMap, context, data);
-            } else if (relationShipStatusCode == -3) {
-              performPOSTServerCommunication( formUrl, queryParamMap, context, data);
-            } else {
-              // throw Exception as Server Not Server Not Available permanently
-            }
-          }
-
-    } catch (exception, stackTrace) {
-      print("exception$exception");
-      print("stackTrace$stackTrace");
-      return null;
-    }
-  }
-
-  Future<Response?> postDataToServerwithDio(String formUrl, Map<String, String> queryParamMap,
-      Map<String, dynamic> jsonData,  BuildContext context) async {
-    try {
-      Dio dio =  Dio();
-      dio.options =  BaseOptions(
-          responseType: ResponseType.json,
-          connectTimeout: 300000,
-          receiveTimeout: 300000,
-          headers: {
-            "Accept": "application/json",
-            "Connection": "keep-alive",
-            "Content-Type": "application/x-www-form-urlencoded",
-            "Charset": "utf-8"
-          });
-      Response response = await dio.post<Map>(
-        formUrl,
-        queryParameters: queryParamMap,
-        data: jsonData,
-        onSendProgress: (int sent, int total) {
-         print("$sent $total");
-        },
-      );
-
-      return response;
-    } on FormatException catch (exception, stackTrace) {
-      print("exception$exception");
-      print("stackTrace$stackTrace");
-      return null;
-    } on DioError catch (exception, stackTrace) {
-      print("exception$exception");
-      print("stackTrace$stackTrace");
-      return null;
-    }
-  }
-
-  Future<Response?> getDioResponse(
-      String formUrl,
-      Map<String, String> queryParamMap,
-      BuildContext context,
-      String? encodedPassword) async {
-    Response? response;
-    try {
-      Dio dio =  Dio();
-      dio.options =  BaseOptions(
-        responseType: ResponseType.json,
-        connectTimeout: 680000,
-        receiveTimeout: 680000,
-        headers: {
-          "Accept": "application/json",
-          "Connection": "keep-alive",
-          "Content-Type": "application/json;charset=UTF-8",
-          "Charset": "utf-8",
-          "Authorization": encodedPassword ?? "",
-        },
-      );
-      if (queryParamMap != null) {
-        response = await dio.get<Map>(formUrl, queryParameters: queryParamMap);
-      } else {
-        response = await dio.get<Map>(formUrl);
-      }
-
-      return response;
-    } on FormatException catch (exception, stackTrace) {
-      print("exception$exception");
-      print("stackTrace$stackTrace");
-      return null;
-    } on DioError catch (exception, stackTrace) {
-      print("exception$exception");
-      print("stackTrace$stackTrace");
-      return null;
-    }
-  }
-
-  Future<Response?> performLiveServerCommunication(
-      String formUrl,
-      Map<String, String> queryParamMap,
-      BuildContext context) async {
-    try {
-
-        Response? relationShipResponse = await getDioResponse(
-            formUrl, queryParamMap,  context, null);
-        if (relationShipResponse != null) {
-          int relationShipStatusCode = checkHTTPURLConnectionResponse(
-              relationShipResponse.statusCode ?? 500);
-
-          if (relationShipStatusCode == 0) {
-            return relationShipResponse;
-          } else if (relationShipStatusCode == -2) {
-            performLiveServerCommunication(
-                 formUrl, queryParamMap, context);
-          } else if (relationShipStatusCode == -3) {
-            performLiveServerCommunication(
-                 formUrl, queryParamMap, context);
-          } else {
-          }
-        }
-    } catch (exception, stackTrace) {
-      print("exception$exception");
-      print("stackTrace$stackTrace");
-      return null;
-    }
-    return null;
-  }
-
-  int checkHTTPURLConnectionResponse(int responseCode) {
-    try {
-      if (responseCode >= 300 && responseCode <= 399) {
-        return -1;
-      } else if (responseCode >= 400 && responseCode <= 499) {
-        return -2;
-      } else if (responseCode >= 500 && responseCode <= 599) {
-        return -3;
-      } else if (responseCode < 299) {
-        return 0;
-      }
-      return -1;
-    } catch (exception, stackTrace) {
-     print("exception$exception");
-     print("stackTrace$stackTrace");
-      return -1;
-    }
-  }*/
-
 }

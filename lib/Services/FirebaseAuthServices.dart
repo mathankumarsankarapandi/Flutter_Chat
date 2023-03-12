@@ -1,5 +1,4 @@
-import 'dart:math';
-
+import 'package:chat/CommonFiles/CommonWidgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -23,8 +22,9 @@ class FirebaseAuthServices extends ChangeNotifier{
 
   Future<String> googleLogIn() async{
     final googleUser = await googleSignIn.signIn();
-    if(googleUser == null)
+    if(googleUser == null) {
       return "Unable Sign in";
+    }
 
     _user = googleUser;
     final googleAuth = await googleUser.authentication;
@@ -46,13 +46,12 @@ class FirebaseAuthServices extends ChangeNotifier{
    return "Sign";
   }
 
-  Future Logout() async{
-    if(googleSignIn != null){
-      try {
-        await googleSignIn.disconnect();
-      } catch (e) {
-        print(e);
-      }
+  Future logout() async{
+    try {
+      await googleSignIn.disconnect();
+    } catch (e,s) {
+      CommonWidgets().printLog("Exception${e.toString()}");
+      CommonWidgets().printLog("Exception${s.toString()}");
     }
     FirebaseAuth.instance.signOut();
   }
@@ -70,8 +69,8 @@ class FirebaseAuthServices extends ChangeNotifier{
     }
 
     } catch (e,s) {
-      print("Exception${e.toString()}");
-      print("Exception${s.toString()}");
+      CommonWidgets().printLog("Exception${e.toString()}");
+      CommonWidgets().printLog("Exception${s.toString()}");
       return e.toString();
     }
   }
@@ -97,8 +96,8 @@ class FirebaseAuthServices extends ChangeNotifier{
     }
 
     } catch (e,s) {
-      print("Exception${e.toString()}");
-      print("Exception${s.toString()}");
+     CommonWidgets().printLog("Exception${e.toString()}");
+     CommonWidgets().printLog("Exception${s.toString()}");
       return e.toString();
     }
   }

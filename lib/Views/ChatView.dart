@@ -1,18 +1,16 @@
-import 'package:chat/CommonFiiles/CommonWidgets.dart';
+import 'package:chat/CommonFiles/CommonWidgets.dart';
 import 'package:chat/Services/FirebaseAuthServices.dart';
 import 'package:chat/Views/ChatOthers.dart';
-import 'package:chat/Views/LogInView.dart';
 import 'package:chat/main.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 class ChatView extends StatefulWidget {
 String title;
 String photoUrl;
-  ChatView(this.title, this.photoUrl);
+  ChatView(this.title, this.photoUrl, {Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -34,6 +32,7 @@ double textContainerWidth = 0;
   String chatTitle = '';
   String userId = '';
   String userStatus = '';
+  String userPhotoUrl = '';
   String userName = '';
 
   String chatRoomId(String currentUser, String receiver) {
@@ -83,15 +82,6 @@ double textContainerWidth = 0;
     return chatRoomId;
   }
 
-  /* String chatRoomId(String user1, String user2) {
-    print("codeUnits$user1 ${user1.toLowerCase().codeUnits[0]}");
-    print("codeUnits$user2 ${user2.toLowerCase().codeUnits}");
-    if(user1.toLowerCase().codeUnits[0] > user2.toLowerCase().codeUnits[0]){
-      return "$user1$user2";
-    } else {
-      return "$user2$user1";
-    }
-  }*/
   final Stream<QuerySnapshot> users = FirebaseFirestore.instance.collection("users").where('followStatus',isEqualTo: 'follow').snapshots();
   final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
@@ -105,46 +95,44 @@ double textContainerWidth = 0;
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          backgroundColor: Colors.black26,
-          title: commonWidgets.getNormalTextWithBold("Alert", CommonWidgets.appThemeColor, 1, fontSize),
-          content: SizedBox(
-            height: 150,
-            child: Column(
+        return CommonWidgets().commonDialog(
+            context,
+            fontSize,
+            24,
+            24,
+            "Logout Alert",
+            Colors.red,
+            Column(
               children: [
                 commonWidgets.getNormalText("Do you want logout the user", CommonWidgets.appThemeColor, 1, fontSize),
                 Row(
                   children: [
-                    Container(
-                      margin: const EdgeInsets.symmetric(vertical: 15),
-                      decoration: BoxDecoration(color:  CommonWidgets.appThemeColor, borderRadius: BorderRadius.circular(10)),
-                      width: 100,
-                      child: TextButton(
-                          onPressed: () {
-                            final provider = Provider.of<FirebaseAuthServices>(context,listen: false);
-                            provider.Logout();
-                            commonWidgets.storeBooleanInSharedPreferences('isRememberLogin', false);
-                            commonWidgets.launchPage(context, NewLoginView());
-                          }, child: commonWidgets.getNormalTextWithBold("OK",Colors.white , 1, fontSize)),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.symmetric(vertical: 15),
-                      decoration: BoxDecoration(color:  CommonWidgets.appThemeColor, borderRadius: BorderRadius.circular(10)),
-                      width: 100,
-                      child: TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          }, child: commonWidgets.getNormalTextWithBold("Cancel",Colors.white , 1, fontSize)),
+                    Expanded(
+                        child:  Container(
+                          margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                          decoration: BoxDecoration(color:  CommonWidgets.appThemeColor, borderRadius: BorderRadius.circular(10)),
+                          child: TextButton(
+                              onPressed: () {
+                                final provider = Provider.of<FirebaseAuthServices>(context,listen: false);
+                                provider.logout();
+                                commonWidgets.storeBooleanInSharedPreferences('isRememberLogin', false);
+                                commonWidgets.launchPage(context, const NewLoginView());
+                              }, child: commonWidgets.getNormalTextWithBold("OK",Colors.white , 1, fontSize)),
+                        )),
+                    Expanded(
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                        decoration: BoxDecoration(color:  CommonWidgets.appThemeColor, borderRadius: BorderRadius.circular(10)),
+                        child: TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            }, child: commonWidgets.getNormalTextWithBold("Cancel",Colors.white , 1, fontSize)),
+                      ),
                     ),
                   ],
                 )
               ],
-            ),
-          ),
-        );
+            ), () { });
       },
     );
   }
@@ -157,7 +145,7 @@ double textContainerWidth = 0;
       DeviceOrientation.portraitDown,
     ]);
 
-    WidgetsBinding.instance!.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
       setStatus('online');
      getUserName();
     super.initState();
@@ -195,7 +183,7 @@ double textContainerWidth = 0;
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-         widget.photoUrl != null && widget.photoUrl != ""
+         widget.photoUrl != ""
           ? Container(
            height: 70,
            color: Colors.indigo,
@@ -214,20 +202,14 @@ double textContainerWidth = 0;
                  ),
                  commonWidgets.getNormalText(widget.title, Colors.white, 1, fontSize),
                  commonWidgets.getIcon(Icons.logout, Colors.white, 30, (){
-                   final provider = Provider.of<FirebaseAuthServices>(context,listen: false);
-                   provider.Logout();
-                   commonWidgets.storeBooleanInSharedPreferences('isRememberLogin', false);
-                   commonWidgets.launchPage(context, NewLoginView());
+                   showDialog_(context);
                  }),
                ],
              ),
            ),
          )
           : commonWidgets.commonAppBar(fontSize,widget.title,(){
-              final provider = Provider.of<FirebaseAuthServices>(context,listen: false);
-              provider.Logout();
-            commonWidgets.storeBooleanInSharedPreferences('isRememberLogin', false);
-            commonWidgets.launchPage(context, NewLoginView());
+           showDialog_(context);
           }),
           commonWidgets.getPadding(top: 10),
           formViewPersonDetails(),
@@ -247,7 +229,7 @@ double textContainerWidth = 0;
           return Expanded(
             child: Container(
               alignment: Alignment.topCenter,
-              child: CircularProgressIndicator(
+              child: const CircularProgressIndicator(
                 backgroundColor: Colors.amber,
                 color: Colors.white,
               ),
@@ -255,18 +237,15 @@ double textContainerWidth = 0;
           );
         }
         final data = snapshot.requireData;
-        if(data != null) {
-          roomId = chatRoomId(widget.title, data.docs[0]['name']);
-          isChatClick = true;
-          chatTitle = data.docs[0]['name'];
-          userId = data.docs[0]['userId'];
-          userStatus = data.docs[0]['status'];
-        }
+        roomId = chatRoomId(widget.title, data.docs[0]['name']);
+        isChatClick = true;
+        chatTitle = data.docs[0]['name'];
+        userId = data.docs[0]['userId'];
+        userStatus = data.docs[0]['status'];
         return Expanded(
           child: ListView.builder(
               itemCount: data.docs.length,
               itemBuilder: ( context,index ){
-                print("ListId${data.docs[index]}");
                 return chatList(data.docs[index]['name'],index, data);
               }),
         );
@@ -284,12 +263,13 @@ double textContainerWidth = 0;
           chatTitle = name;
           userId = data.docs[index]['userId'];
           userStatus = data.docs[index]['status'];
+          userPhotoUrl = data.docs[index]['photoUrl'];
         });
-        commonWidgets.launchPage(context, ChatOthers(widget.title,widget.photoUrl,userStatus,data.docs[index]['name'],name,roomId));
+        commonWidgets.launchPage(context, ChatOthers(widget.title,widget.photoUrl,userStatus,data.docs[index]['name'],name,roomId,userPhotoUrl));
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 10,horizontal: 10),
-        decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.grey,width: 0.2))),
+        padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 10),
+        decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: Colors.grey,width: 0.2))),
         child: Row(
           children: [
             data.docs[index]['photoUrl']  != null
